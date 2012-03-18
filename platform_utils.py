@@ -45,12 +45,13 @@ else:
 
 _exfiles_key = "EXCLUDE_FILES"
 _exdirs_key = "EXCLUDE_DIRS"
+_target_key = "TARGET"
 
 class Config :
-    def __init__(self, basepath, target, configlist) :
+    def __init__(self, basepath, configlist) :
         self.__base = basepath
-        self.__target = target
         self.__configlist = configlist[_name]
+        self.__target = self.__configlist[_target_key]
         self.__exclude_files = {}
         self.__exclude_dirs = {}
         if self.__configlist.has_key(_exfiles_key) :
