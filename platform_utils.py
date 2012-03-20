@@ -22,6 +22,7 @@
  ##
 
 import platform
+from copy import deepcopy
 _id = platform.system()
 _name = "";
 if _id == 'Linux':
@@ -43,6 +44,8 @@ elif _id == 'NetBSD':
 else:
     _name = "NA"
 
+platform = _name
+
 _exfiles_key = "EXCLUDE_FILES"
 _exdirs_key = "EXCLUDE_DIRS"
 _target_key = "TARGET"
@@ -50,6 +53,7 @@ _target_key = "TARGET"
 class Config :
     def __init__(self, basepath, configlist) :
         self.__base = basepath
+        self.__all_config = configlist
         self.__configlist = configlist[_name]
         self.__target = self.__configlist[_target_key]
         self.__exclude_files = {}
@@ -61,6 +65,24 @@ class Config :
 
     def __getitem__(self, name) :
         return self.__configlist[name]
+
+    def Copy(self) :
+        base = self.__base
+        configlist = deepcopy(self.__all_config)
+        return Config(base, configlist)
+
+    def Extend(self, configlist) :
+        configs =  configlist[_name]
+        for key in configs :
+            if isinstance(configs[key], list) :
+                if not self.__configlist.has_key(key) :
+                    self.__configlist[key] = []
+                self.__configlist[key].extend(configs[key])
+                
+            elif isinstance(configs[key], str) :
+                if not self.__configlist.has_key(key) :
+                    self.__configlist[key] = ""
+                self.__configlist[key] += ' ' + configs[key]
 
     def AddExcludeFile(self, exclude_list) :
         for key in exclude_list :
@@ -89,6 +111,9 @@ class Config :
 
     def configlist(self) :
         return self.__configlist
+    
+    def set_base(self, base) :
+        self.__base = base
     
     def base(self) :
         return self.__base
