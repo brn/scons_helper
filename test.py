@@ -2,15 +2,14 @@ import os
 import glob
 import SCons
 from sources import Sources
-def TestRunner(root) :
+def TestRunner(root, current, is_remove) :
     def CheckTest(env, source, target) :
-        current = os.getcwd().replace('\\', '/')
         os.system(current + '/' + str(target[0]))
-        os.remove(current + '/' + str(target[0]))
-        for m in glob.glob(root + '/*.o') :
-            os.remove(str(m))
-            for m in glob.glob(root + '/*.obj') :
-                os.remove(str(m))
+        if not is_remove :
+            os.remove(current + '/' + str(target[0]))
+            for m in source :
+                if m.rstr().endswith('.o') or m.rstr().endswith('.obj') :
+                    os.remove(current + '/' + m.rstr())
     return CheckTest
 
 class TestBuilder :
@@ -24,7 +23,7 @@ class TestBuilder :
                            LIBS=flags[1],
                            LINKFLAGS=flags[2])
 
-    def Build(self, cpppath, root) :
+    def Build(self, cpppath, root, current, *args) :
         self.__targets.extend(self.__config["DEPENDS"])
         objs = []
         for target in self.__targets :
@@ -32,5 +31,9 @@ class TestBuilder :
         if self.__config.configlist().has_key("STATIC_LIBS") :
             objs.append(self.__config["STATIC_LIBS"])
         test = self.__env.Program(self.__config.target(), objs, CPPPATH=[cpppath])
-        self.__env.AddPostAction(test, TestRunner(root))
         self.__env.AlwaysBuild(test)
+        if len(args) > 0 :
+            self.__env.AddPostAction(test, TestRunner(root, current, args[0]))
+        else :
+            self.__env.AddPostAction(test, TestRunner(root, current, None))
+        
