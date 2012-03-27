@@ -58,6 +58,7 @@ class Config :
         self.__target = self.__configlist[_target_key]
         self.__exclude_files = {}
         self.__exclude_dirs = {}
+        self.__obj_suffix = '-' + _id + '.o'
         if self.__configlist.has_key(_exfiles_key) :
             self.AddExcludeFile(self.__configlist[_exfiles_key])
         if self.__configlist.has_key(_exdirs_key) :
@@ -115,6 +116,9 @@ class Config :
     def set_base(self, base) :
         self.__base = base
     
+    def suffix(self) :
+        return self.__obj_suffix
+
     def base(self) :
         return self.__base
 

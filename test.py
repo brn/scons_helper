@@ -25,12 +25,9 @@ class TestBuilder :
 
     def Build(self, cpppath, root, current, *args) :
         self.__targets.extend(self.__config["DEPENDS"])
-        objs = []
-        for target in self.__targets :
-            objs.append(self.__env.Object(target.split(".cc")[0] + "-ut.o", target))
         if self.__config.configlist().has_key("STATIC_LIBS") :
-            objs.append(self.__config["STATIC_LIBS"])
-        test = self.__env.Program(self.__config.target(), objs, CPPPATH=[cpppath])
+            self.__targets.extend(self.__config["STATIC_LIBS"])
+        test = self.__env.Program(self.__config.target(), self.__targets, CPPPATH=[cpppath])
         self.__env.AlwaysBuild(test)
         if len(args) > 0 :
             self.__env.AddPostAction(test, TestRunner(root, current, args[0]))
