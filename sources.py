@@ -27,6 +27,9 @@ class Sources :
     def __init__(self, config) :
         self.__config = config
         self.__targets = []
+        if self.__config.pre() != None :
+            for command in self.__config.pre() :
+                os.system(command)
 
     def GetFlags(self, mode) :
         return (self.__config[mode.upper()],

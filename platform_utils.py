@@ -59,10 +59,13 @@ class Config :
         self.__exclude_files = {}
         self.__exclude_dirs = {}
         self.__obj_suffix = '-' + _id + '.o'
+        self.__pre_command = None
         if self.__configlist.has_key(_exfiles_key) :
             self.AddExcludeFile(self.__configlist[_exfiles_key])
         if self.__configlist.has_key(_exdirs_key) :
             self.AddExcludeDir(self._configlist[_exdirs_key])
+        if self.__configlist.has_key('PRE_COMMAND') :
+            self.__pre_command = self.__configlist['PRE_COMMAND']
 
     def __getitem__(self, name) :
         return self.__configlist[name]
@@ -121,5 +124,8 @@ class Config :
 
     def base(self) :
         return self.__base
+
+    def pre(self) :
+        return self.__pre_command
 
 
